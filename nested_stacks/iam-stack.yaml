@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09' 
+Description: IAM Child Stack 
+  
+Resources: 
+  EC2Role: 
+    Type: AWS::IAM::Role 
+    Properties: 
+      RoleName: ExamEC2Role 
+      AssumeRolePolicyDocument: 
+        Version: '2012-10-17' 
+        Statement: 
+          - Effect: Allow 
+            Principal: 
+              Service: ec2.amazonaws.com 
+            Action: sts:AssumeRole
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess 
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore 
+  
+  EC2InstanceProfile: 
+    Type: AWS::IAM::InstanceProfile 
+    Properties: 
+      Roles: [!Ref EC2Role] 
+  
+Outputs: 
+  InstanceProfileArn: 
+    Value: !GetAtt EC2InstanceProfile.Arn 
+    Export: 
+      Name: !Sub '${AWS::StackName}-InstanceProfileArn'
+
+  
